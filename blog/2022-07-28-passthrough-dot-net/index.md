@@ -7,6 +7,8 @@ tags: [StereoKit, AR, VR, .NET, Meta Quest]
 ---
 This guide will show you how to enable video passthrough on your Meta Quest for a .NET StereoKit project. (If you’re looking to enable passthrough on a Native Android StereoKit project, check out [this post](/todo) instead!)
 
+<!--truncate-->
+
 ## Prerequisites
 - Meta Quest 2
 - Visual Studio 2019 or 2022
@@ -18,12 +20,15 @@ We will start from scratch by creating a new StereoKit project. The easiest way 
 
 Now open up Visual Studio (2019 or 2022). Click on **Create a new project**. Search for “StereoKit” and select **StereoKit .Net Core**. Give your project a name and create it.
 
-![Create new project](./creating%20new%20project.png)
+![Create new project](./creating-new-project.png)
 
 ## Step 2: Get the passthrough code
 Next, we need to add the code for the passthrough extension. To do this, right click on your project name in the Solution Explorer, click **Add**, then click **Class**. Create a new file named **PassthroughFBExt.cs**. Then paste this code into your new class file:
 
-```jsx title="PassthroughFBExt.cs"
+<details>
+<summary>PassthroughFBExt.cs</summary>
+
+```csharp
 using System;
 using System.Runtime.InteropServices;
 
@@ -276,30 +281,128 @@ namespace StereoKit.Framework
 For the latest version of this code, check out the source at: 
 
 https://github.com/StereoKit/StereoKit/blob/master/Examples/StereoKitTest/Tools/PassthroughFBExt.cs 
+</details>
 
 ## Step 3: Initialize the passthrough stepper
-Now that we’ve got the code, we’ll need to hook it up to our main program. Open up the **Program.cs** file. Add the PassthroughFBExt stepper at the beginning of the program (line 11). You’ll also need to add a `using` statement for `StereoKit.Framework` at the top of the file (line 2):
+Now that we’ve got the code, we’ll need to hook it up to our main program. Open up the **Program.cs** file. Add the `PassthroughFBExt` stepper at the beginning of the program (line 11). You’ll also need to add a `using` statement for `StereoKit.Framework` at the top of the file (line 2):
+
+```csharp title="program.cs" showLineNumbers
+using StereoKit;
+//highlight-next-line
+using StereoKit.Framework;
+using System;
+
+namespace PassthroughDotNet
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            //highlight-next-line
+            SK.AddStepper<PassthroughFBExt>();
+
+            // Initialize StereoKit
+            SKSettings settings = new SKSettings
+            {
+                appName = "PassthroughDotNet",
+                assetsFolder = "Assets",
+            };
+            if (!SK.Initialize(settings))
+                Environment.Exit(1);
+
+
+            // Create assets used by the app
+            Pose cubePose = new Pose(0, 0, -0.5f, Quat.Identity);
+            Model cube = Model.FromMesh(
+                Mesh.GenerateRoundedCube(Vec3.One * 0.1f, 0.02f),
+                Default.MaterialUI);
+
+            Matrix floorTransform = Matrix.TS(0, -1.5f, 0, new Vec3(30, 0.1f, 30));
+            Material floorMaterial = new Material(Shader.FromFile("floor.hlsl"));
+            floorMaterial.Transparency = Transparency.Blend;
+
+
+            // Core application loop
+            while (SK.Step(() =>
+            {
+                if (SK.System.displayType == Display.Opaque)
+                    Default.MeshCube.Draw(floorMaterial, floorTransform);
+
+                UI.Handle("Cube", ref cubePose, cube.Bounds);
+                cube.Draw(cubePose.ToMatrix());
+            })) ;
+            SK.Shutdown();
+        }
+    }
+} 
+```
 
 ## Step 4: Run it!
-Launch the Oculus App on your PC (If you don’t already have it, you can download it here). Plug your Quest in to your PC using a USB-C cable (or use Quest Air Link, if you’re into that sort thing). The Oculus App allows us to use our Quest with PC VR programs. So our program will actually be running on the PC and streamed to our headset! 
+Launch the **Oculus App** on your PC (If you don’t already have it, you can download it [here](https://www.meta.com/quest/setup/)). Plug your Quest in to your PC using a USB-C cable (or use Quest Air Link, if you’re into that sort thing). The Oculus App allows us to use our Quest with PC VR programs. So our program will actually be running on the PC and streamed to our headset! 
 
-You may need to enable passthrough in the Oculus App since it is a relatively new/experimental feature. To do this, open the Oculus App on your PC and head over to Settings > Beta. Enable the options for both Developer Runtime Features and Passthrough over Oculus Link.
+You may need to enable passthrough in the Oculus App since it is a relatively new/experimental feature. To do this, open the Oculus App on your PC and head over to **Settings > Beta**. Enable the options for both **Developer Runtime Features** and **Passthrough over Oculus Link**.
 
-Next, strap on your Quest headset. Open up the Quick Settings and select Quest Link. (If you don’t see the Quest Link option, then your headset probably isn’t properly connected to the Oculus App.)
+![enable these options on the Oculus desktop app](quest-link-settings.png)
+
+Next, strap on your Quest headset. Open up the **Quick Settings** and select **Quest Link**. (If you don’t see the Quest Link option, then your headset probably isn’t properly connected to the Oculus App.)
+
+![Select Quest Link from home menu](select-quest-link.png)
 
 Click the green play button in Visual Studio…
 
+![Smash that play button, fam](launch-app.png)
 
 …and the program will start up with passthrough enabled!
 
-## Bonus: Add a menu to toggle the passthrough
-Cool, so now that we got the passthrough enabled, it would be nice if we could toggle it on/off. So let’s add a menu and hook it up to the passthrough stepper. In the Program.cs file, we’ll need to access a reference to that Passthrough stepper that we initialized earlier. So go ahead and set it to local variable like this:
+![passthrough-demo](ezgif-3-92c50aac5c.gif)
 
-Next, we’ll define a Pose for the window. So add another local variable:
+## Bonus: Add a menu to toggle the passthrough
+Cool, so now that we got the passthrough enabled, it would be nice if we could toggle it on/off. So let’s add a menu and hook it up to the passthrough stepper. In the **Program.cs** file, we’ll need to access a reference to that Passthrough stepper that we initialized earlier. So go ahead and set it to local variable like this:
+
+```csharp title="Program.cs"
+PassthroughFBExt stepper = SK.AddStepper<PassthroughFBExt>();
+```
+
+Next, we’ll define a `Pose` for the window. So add another local variable:
+```csharp title="Program.cs"
+Pose windowPose = new Pose(-0.5f, 0, -0.3f, Quat.LookDir(1, 0, 1));
+```
 
 Now in the core application loop, we can render the menu. Add a UI window with a button that is hooked up to the stepper (lines 10 -23, below):
 
+```csharp title="Program.cs" showLineNumbers
+// Core application loop
+while (SK.Step(() =>
+{
+    if (SK.System.displayType == Display.Opaque)
+        Default.MeshCube.Draw(floorMaterial, floorTransform);
+
+    UI.Handle("Cube", ref cubePose, cube.Bounds);
+    cube.Draw(cubePose.ToMatrix());
+
+    // highlight-start
+    // Passthrough menu
+    UI.WindowBegin("Passthrough Menu", ref windowPose);
+    if (stepper.Available)
+    {
+
+        if (UI.Button("toggle"))
+            stepper.EnabledPassthrough = !stepper.EnabledPassthrough;
+        UI.Label($"Passthrough is {(stepper.EnabledPassthrough ? "ON" : "OFF")}");
+    }
+    else
+    {
+        UI.Label("Passthrough is not available :(");
+    }
+    UI.WindowEnd();
+    // highlight-end
+
+})) ;
+```
+
 Great, that’s it! Now you should see a menu to toggle the passthrough on/off.
+
+![passthrough-demo](passthrough-toggle-menu.png) 
 
 ## Summary
 To access all the code files used in this guide, check out this git repo here: https://github.com/jackdaus/StereoKitPassthroughDotNet. You can clone this repository and run the completed project on your Quest!

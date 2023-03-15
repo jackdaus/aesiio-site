@@ -15,7 +15,8 @@ export default function Projects() {
 					fontSize: '20px',
 				}}>
 				<h1>Projects</h1>
-				<p>Some projects I've made</p>
+				<p>Some of my personal projects</p>
+                <p>🚧UNDER CONSTRUCTION🚧</p>
 				<main>
 					<ProjectsList/>
 				</main>

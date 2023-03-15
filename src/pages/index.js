@@ -17,8 +17,8 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            to="/blog">
+            Check out my bog
           </Link>
         </div>
       </div>
@@ -33,8 +33,11 @@ export default function Home() {
       title={`Hello from ${siteConfig.title}`}
       description="A Blog Of Augmented Reality How-Tos For Beginners">
       <HomepageHeader />
-      <main>
-        <HomepageFeatures />
+      <main style={{display: 'flex', flexGrow: 1}}>
+        {/* <div style={{display: 'flex', justifyContent: 'center', flexGrow: 1}}>
+            <img src="img/frogvr.png" style={{height: '300px'}}/>
+        </div> */}
+        {/* <HomepageFeatures /> */}
       </main>
     </Layout>
   );

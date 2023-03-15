@@ -9,3 +9,8 @@ The system takes advantage of the Meta Quest’s spatial anchoring system to ens
 GitHub: https://github.com/jackdaus/AR-Inventory
 
 <iframe width="384" height="256" src="https://www.youtube.com/embed/_x93WXU-CRo" title="AR Inventory - GMU CS 452 - Fall 2022 (WIP)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+![hand menu](hand-menu.jpg)
+![hand menu](minimap-search.jpg)
+![hand menu](minimap.jpg)
+![hand menu](new-item.jpg)
