@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <Layout
       title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="A Blog Of Augmented Reality How-Tos For Beginners">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
