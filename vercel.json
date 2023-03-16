@@ -1,0 +1,12 @@
+{
+    "redirects": [
+        {
+            "source": "/how-to-use-passthrough-with-stereokit-on-meta-quest-native-android/",
+            "destination": "/blog/passthrough-native-android"
+        },
+        {
+            "source": "/how-to-use-passthrough-with-stereokit-on-meta-quest-dot-net/",
+            "destination": "/blog/passthrough-dot-net-core"
+        }
+    ]
+}
