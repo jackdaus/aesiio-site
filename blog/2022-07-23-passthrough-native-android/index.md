@@ -644,5 +644,9 @@ In the Solution Explorer, right click on **StereoKit_Android** and select **Set 
 
 ![click run](run-the-app.png)
 
+... and voilà!
+
+![passthrough-demo](ezgif-3-92c50aac5c.gif)
+
 ## Summary
 To access all the code files used in this guide, check out this git repo here: https://github.com/jackdaus/StereoKitPassthroughNativeAndroid. You can clone this repository and run the completed project on your Quest!
