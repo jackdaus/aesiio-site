@@ -49,7 +49,7 @@ const config = {
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
 					editUrl:
-						'https://github.com/jackdaus/aesiio-site/tree/main/blog',
+						'https://github.com/jackdaus/aesiio-site/tree/main',
 				},
 				theme: {
 					customCss: require.resolve('./src/css/custom.css'),
@@ -61,7 +61,7 @@ const config = {
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 		({
-			image: 'img/frogvr.png',
+			image: 'img/aesiio.png',
 			navbar: {
 				title: 'Aesiio',
 				logo: {

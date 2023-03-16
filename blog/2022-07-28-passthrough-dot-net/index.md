@@ -1,8 +1,8 @@
 ---
 slug: passthrough-dot-net-core
 title: How to Use Meta Quest Passthrough with StereoKit (.NET Core)
-description: A beginner's guide on how to enable video passthrough on Meta Quest for a .NET StereoKit project.
-image: https://i.imgur.com/mErPwqL.png
+description: A beginner's guide on how to enable video passthrough on Meta Quest for a .NET Core StereoKit project.
+image: ./ezgif-3-92c50aac5c.gif
 authors: jack
 tags: [StereoKit, AR, VR, .NET Core, Meta Quest]
 ---
