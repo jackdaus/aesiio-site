@@ -30,7 +30,7 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
+      title={`${siteConfig.title}`}
       description="A Blog Of Augmented Reality How-Tos For Beginners">
       <HomepageHeader />
       <main style={{display: 'flex', flexGrow: 1}}>
