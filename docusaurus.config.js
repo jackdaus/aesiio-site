@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: 'Aesiio',
-	tagline: 'Frogmented reality',
+	tagline: 'A Blog Of Augmented Reality How-Tos For Beginners',
 	favicon: 'img/favicon.ico',
 
 	// Set the production url of your site here
@@ -94,6 +94,10 @@ const config = {
 								label: 'Twitter',
 								href: 'https://twitter.com/aesiio',
 							},
+                            {
+                                label: 'YouTube',
+                                href: 'https://www.youtube.com/@jackdaus3124/featured'
+                            }
 						],
 					},
 					{
@@ -110,7 +114,7 @@ const config = {
 						],
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} Jack Daus`,
+				copyright: `© ${new Date().getFullYear()} Jack Daus`,
 			},
 			prism: {
 				theme: lightCodeTheme,

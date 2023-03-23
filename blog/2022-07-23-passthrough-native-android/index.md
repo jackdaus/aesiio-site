@@ -18,7 +18,7 @@ This guide will show you how to add the Meta Quest video passthrough feature to 
 ## Step 1: Get the code
 We’ll start from the ground up with a new StereoKit Project. For this tutorial, we will start with the cross-platform template. First, head over to this GitHub repository and clone it locally to your computer: https://github.com/StereoKit/SKTemplate-Universal. To clone, run this command in a command prompt:
 
-```
+```bash
 git clone https://github.com/StereoKit/SKTemplate-Universal.git
 ```
 
