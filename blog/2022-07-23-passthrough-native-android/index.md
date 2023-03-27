@@ -5,6 +5,7 @@ description: A beginner's guide on how to enable video passthrough on Meta Quest
 image: ./ezgif-3-92c50aac5c.gif
 authors: jack
 tags: [StereoKit, AR, VR, Native Android, Meta Quest]
+comments: true
 ---
 This guide will show you how to add the Meta Quest video passthrough feature to a [StereoKit](https://stereokit.net/) project. This how-to guide is for **Native Android** based StereoKit projects.<!--truncate--> (If you are looking to add passthrough to a .NET Core StereoKit project, check out [this post](/blog/passthrough-dot-net-core) instead.) You can find all the code in this guide over at [this git repo](https://github.com/jackdaus/StereoKitPassthroughNativeAndroid). 
 
