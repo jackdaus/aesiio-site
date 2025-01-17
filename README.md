@@ -16,13 +16,17 @@ $ yarn start
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-### Build
+### Updating
 
-```
-$ yarn build
+Check for outdated NPM packages with, 
+```bash
+npm outdated
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Update indivudal packages to the latest release by running, 
+```bash
+npm install [package-name]@latest
+```
 
 ### Deployment
 
