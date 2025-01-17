@@ -4,7 +4,7 @@ import Link from "@docusaurus/Link";
 const ProjectList = [
   {
     title: 'AR Inventory',
-    link: 'projects/ar-inventory',
+    link: '/projects/ar-inventory',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
