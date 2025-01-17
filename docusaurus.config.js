@@ -1,8 +1,7 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+import {themes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -117,11 +116,11 @@ const config = {
 				copyright: `© ${new Date().getFullYear()} Jack Daus`,
 			},
 			prism: {
-				theme: lightCodeTheme,
-				darkTheme: darkCodeTheme,
-                additionalLanguages: ['csharp']
+				theme: themes.github,
+				darkTheme: themes.dracula,
+                additionalLanguages: ['csharp','bash']
 			},
 		}),
 };
 
-module.exports = config;
+export default config;
