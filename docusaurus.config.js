@@ -82,6 +82,19 @@ const config = {
       footer: {
         style: "dark",
         links: [
+					{
+            title: "Content",
+            items: [
+              {
+                label: "Blog",
+                href: "/blog",
+              },
+							{
+                label: "Projects",
+                href: "/projects",
+              },
+            ],
+          },
           {
             title: "Social",
             items: [
@@ -94,13 +107,13 @@ const config = {
                 href: "https://bsky.app/profile/aesiio.bsky.social",
               },
               {
-                label: "Twitter",
-                href: "https://twitter.com/aesiio",
+                label: "X",
+                href: "https://x.com/aesiio",
               },
-              {
-                label: "YouTube",
-                href: "https://www.youtube.com/@jackdaus3124/featured",
-              },
+              // {
+              //   label: "YouTube",
+              //   href: "https://www.youtube.com/@jackdaus3124/featured",
+              // },
             ],
           },
           {
