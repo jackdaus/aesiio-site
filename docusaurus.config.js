@@ -36,13 +36,7 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          // editUrl:
-          // 	'https://github.com/jackdaus/aesiio-site/tree/main/docs',
-        },
+        docs: false,
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
@@ -68,12 +62,6 @@ const config = {
           src: "img/frogvr.png",
         },
         items: [
-          // {
-          // 	type: 'doc',
-          // 	docId: 'intro',
-          // 	position: 'left',
-          // 	label: 'Tutorial',
-          // },
           { to: "/blog", label: "Blog", position: "left" },
           { to: "/projects", label: "Projects", position: "left" },
           { to: "/about", label: "About", position: "right" },
@@ -82,6 +70,19 @@ const config = {
       footer: {
         style: "dark",
         links: [
+					{
+            title: "Content",
+            items: [
+              {
+                label: "Blog",
+                href: "/blog",
+              },
+							{
+                label: "Projects",
+                href: "/projects",
+              },
+            ],
+          },
           {
             title: "Social",
             items: [
@@ -94,13 +95,13 @@ const config = {
                 href: "https://bsky.app/profile/aesiio.bsky.social",
               },
               {
-                label: "Twitter",
-                href: "https://twitter.com/aesiio",
+                label: "X",
+                href: "https://x.com/aesiio",
               },
-              {
-                label: "YouTube",
-                href: "https://www.youtube.com/@jackdaus3124/featured",
-              },
+              // {
+              //   label: "YouTube",
+              //   href: "https://www.youtube.com/@jackdaus3124/featured",
+              // },
             ],
           },
           {

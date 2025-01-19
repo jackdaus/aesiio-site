@@ -29,3 +29,41 @@
     --ifm-background-color: #181e20;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/*Utilities*/
+
+/*Layout Utilities*/
+
+.inline-flex {
+	display: inline-flex;
+}
+
+.flex-row {
+	flex-direction: row;
+}
+
+.flex-row-reverse {
+	flex-direction: row-reverse;
+}
+
+.align-items-center {
+	align-items: center;
+}
+
+.gap--sm {
+	gap: 10px;
+}
+
+/*Text Utilities*/
+
+.text--primary--lightest {
+	color: var(--ifm-color-primary-lightest);
+}
+
+.text--sublte {
+	color: #6c757d;
+}
+
+.text--subtlest {
+	color: #a6abb0;
+}
