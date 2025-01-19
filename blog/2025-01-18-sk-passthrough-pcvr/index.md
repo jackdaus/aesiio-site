@@ -1,40 +1,57 @@
 ---
-slug: passthrough-dot-net-core
-title: How to Use Meta Quest Passthrough with StereoKit (.NET Core)
-description: A beginner's guide on how to enable video passthrough on Meta Quest for a .NET Core StereoKit project.
-image: ./ezgif-3-92c50aac5c.gif
+slug: sk-quest-passthrough-pcvr
+title: How to Use Meta Quest Passthrough with StereoKit (PCVR)
+description: A beginner's guide on how to enable video passthrough on Meta Quest for a PCVR StereoKit project.
+image: ./sk-passthrough-2025.gif
 authors: jack
-tags: [StereoKit, AR, VR, .NET Core, Meta Quest]
+tags: [StereoKit, AR, VR, .NET Core, Meta Quest, Passthrough]
 comments: true
 ---
-This guide will show you how to add the Meta Quest video passthrough feature to a [StereoKit](https://stereokit.net/) project. This how-to guide is for **.NET Core** based StereoKit projects.<!--truncate--> (If you’re looking to enable passthrough on a Native Android StereoKit project, check out [this post](/blog/passthrough-native-android) instead.) You can find all the code in this guide over at [this git repo](https://github.com/jackdaus/StereoKitPassthroughDotNet).
-
-:::warning[Old tutorial!]
-
-This is an older tutorial! Please refer to the updated version [here](/blog/sk-quest-passthrough-pcvr).
-
-:::
+This guide will show you how to add the Meta Quest passthrough feature to a [StereoKit](https://stereokit.net/) project. This how-to guide assumes we are building an app for PCVR.<!--truncate--> (If you’re looking to enable passthrough on a Native Android StereoKit project, check out [this post](/blog/passthrough-native-android) instead.) You can find all the code in this guide over at [this git repo](https://github.com/jackdaus/StereoKitPassthroughDotNet). 
 
 ## Prerequisites
-- Meta Quest 2
-- Visual Studio 2019 or 2022
+
+- Meta Quest 2, 3, 3S, or Pro
+- Visual Studio 2022
 - Windows 10 or 11
-- Quest Link (or Quest Air Link)
+- [Meta Quest Link app](https://www.meta.com/quest/setup/)
+- [PCVR enabled laptop](https://www.meta.com/help/quest/articles/headsets-and-accessories/oculus-link/requirements-quest-link/) 
 
 ## Step 1: Create a new StereoKit project
-We will start from scratch by creating a new StereoKit project. The easiest way to get up and running with a fresh StereoKit project is to use a Visual Studio template! If you don’t already have the StereoKit Visual Studio templates, head over to this link to download and install them: https://marketplace.visualstudio.com/items?itemName=NickKlingensmith.StereoKitTemplates
 
-Now open up Visual Studio (2019 or 2022). Click on **Create a new project**. Search for “StereoKit” and select **StereoKit .Net Core**. Give your project a name and create it.
+We will start from scratch by creating a new StereoKit project. The easiest way to get up and running with a fresh StereoKit project is to use a Visual Studio template! To download the templates, run this command in the terminal, 
+```
+dotnet new install StereoKit.Templates
+```
+
+Or, you can install them from the Visual Studio marketplace, here: https://marketplace.visualstudio.com/items?itemName=NickKlingensmith.StereoKitTemplates. 
+
+Now open up Visual Studio. Click on **Create a new project**. Search for "StereoKit" and select **StereoKit .Net Core**. Give your project a name and create it.
 
 ![Create new project](./creating-new-project.png)
 
 ## Step 2: Get the passthrough code
-Next, we need to add the code for the passthrough extension. To do this, right click on your project name in the Solution Explorer, click **Add**, then click **Class**. Create a new file named **PassthroughFBExt.cs**. Then paste this code into your new class file:
+
+Next, we need to add the code for the passthrough extension. To do this, right click on your project name in the **Solution Explorer**, click **Add**, then click **Class**. Create a new file named **PassthroughFBExt.cs**. Then paste this code into your new class file:
 
 <details>
 <summary>PassthroughFBExt.cs</summary>
 
 ```csharp
+// SPDX-License-Identifier: MIT
+// The authors below grant copyright rights under the MIT license:
+// Copyright (c) 2024 Nick Klingensmith
+// Copyright (c) 2024 Qualcomm Technologies, Inc.
+
+// This requires an addition to the Android Manifest to work on quest:
+// <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="true" />
+// And adding this to the application section can also improve the passthrough
+// experience:
+// <meta-data android:name="com.oculus.ossplash.background" android:value="passthrough-contextual"/>
+//
+// To work on Quest+Link, you may need to enable beta features in the Oculus
+// app's settings.
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -44,9 +61,7 @@ namespace StereoKit.Framework
 	{
 		bool extAvailable;
 		bool enabled;
-		bool enabledPassthrough;
 		bool enableOnInitialize;
-		bool passthroughRunning;
 		XrPassthroughFB      activePassthrough = new XrPassthroughFB();
 		XrPassthroughLayerFB activeLayer       = new XrPassthroughLayerFB();
 
@@ -54,12 +69,16 @@ namespace StereoKit.Framework
 		bool  oldSky;
 
 		public bool Available => extAvailable;
-		public bool Enabled { get => extAvailable && enabled; set => enabled = value; }
-		public bool EnabledPassthrough { get => enabledPassthrough; set {
-			if (Available && enabledPassthrough != value) {
-				enabledPassthrough = value;
-				if ( enabledPassthrough) StartPassthrough();
-				if (!enabledPassthrough) EndPassthrough();
+		public bool Enabled { get => enabled; set {
+			if (extAvailable == false || enabled == value) return;
+			if (value)
+			{
+				enabled = StartPassthrough();
+			}
+			else
+			{
+				PausePassthrough();
+				enabled = false;
 			}
 		} }
 
@@ -75,18 +94,17 @@ namespace StereoKit.Framework
 		public bool Initialize()
 		{
 			extAvailable =
-				Backend.XRType == BackendXRType.OpenXR &&
+				Backend.XRType == BackendXRType.OpenXR         &&
 				Backend.OpenXR.ExtEnabled("XR_FB_passthrough") &&
-				LoadBindings();
+				LoadBindings()                                 &&
+				InitPassthrough();
 
-			if (enableOnInitialize)
-				EnabledPassthrough = true;
 			return true;
 		}
 
 		public void Step()
 		{
-			if (!EnabledPassthrough) return;
+			if (Enabled == false) return;
 
 			XrCompositionLayerPassthroughFB layer = new XrCompositionLayerPassthroughFB(
 				XrCompositionLayerFlags.BLEND_TEXTURE_SOURCE_ALPHA_BIT, activeLayer);
@@ -95,40 +113,91 @@ namespace StereoKit.Framework
 
 		public void Shutdown()
 		{
-			EnabledPassthrough = false;
+			if (!Enabled) return;
+			Enabled = false;
+			DestroyPassthrough();
 		}
 
-		void StartPassthrough()
+		bool InitPassthrough()
 		{
-			if (!extAvailable) return;
-			if (passthroughRunning) return;
-			passthroughRunning = true;
-
-			oldColor = Renderer.ClearColor;
-			oldSky   = Renderer.EnableSky;
+			XrPassthroughFlagsFB flags = enableOnInitialize
+				? XrPassthroughFlagsFB.IS_RUNNING_AT_CREATION_BIT_FB
+				: XrPassthroughFlagsFB.None;
 
 			XrResult result = xrCreatePassthroughFB(
 				Backend.OpenXR.Session,
-				new XrPassthroughCreateInfoFB(XrPassthroughFlagsFB.IS_RUNNING_AT_CREATION_BIT_FB),
+				new XrPassthroughCreateInfoFB(flags),
 				out activePassthrough);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrCreatePassthroughFB failed: {result}");
+				return false;
+			}
 
 			result = xrCreatePassthroughLayerFB(
 				Backend.OpenXR.Session,
-				new XrPassthroughLayerCreateInfoFB(activePassthrough, XrPassthroughFlagsFB.IS_RUNNING_AT_CREATION_BIT_FB, XrPassthroughLayerPurposeFB.RECONSTRUCTION_FB),
+				new XrPassthroughLayerCreateInfoFB(activePassthrough, flags, XrPassthroughLayerPurposeFB.RECONSTRUCTION_FB),
 				out activeLayer);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrCreatePassthroughLayerFB failed: {result}");
+				return false;
+			}
 
+			enabled  = enableOnInitialize;
+			StartSky();
+			return true;
+		}
+
+		void DestroyPassthrough()
+		{
+			xrDestroyPassthroughLayerFB(activeLayer);
+			xrDestroyPassthroughFB(activePassthrough);
+		}
+
+		bool StartPassthrough()
+		{
+			XrResult result = xrPassthroughStartFB(activePassthrough);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrPassthroughStartFB failed: {result}");
+				return false;
+			}
+
+			result = xrPassthroughLayerResumeFB(activeLayer);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrPassthroughLayerResumeFB failed: {result}");
+				return false;
+			}
+
+			StartSky();
+			return true;
+		}
+
+		void StartSky()
+		{
+			oldColor = Renderer.ClearColor;
+			oldSky   = Renderer.EnableSky;
 			Renderer.ClearColor = Color.BlackTransparent;
 			Renderer.EnableSky  = false;
 		}
 
-		void EndPassthrough()
+		void PausePassthrough()
 		{
-			if (!passthroughRunning) return;
-			passthroughRunning = false;
+			XrResult result = xrPassthroughLayerPauseFB(activeLayer);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrPassthroughLayerPauseFB failed: {result}");
+				return;
+			}
 
-			xrPassthroughPauseFB       (activePassthrough);
-			xrDestroyPassthroughLayerFB(activeLayer);
-			xrDestroyPassthroughFB     (activePassthrough);
+			result = xrPassthroughPauseFB(activePassthrough);
+			if (result != XrResult.Success)
+			{
+				Log.Err($"xrPassthroughPauseFB failed: {result}");
+				return;
+			}
 
 			Renderer.ClearColor = oldColor;
 			Renderer.EnableSky  = oldSky;
@@ -145,7 +214,8 @@ namespace StereoKit.Framework
 		enum XrPassthroughFlagsFB : UInt64
 		{
 			None = 0,
-			IS_RUNNING_AT_CREATION_BIT_FB = 0x00000001
+			IS_RUNNING_AT_CREATION_BIT_FB = 0x00000001,
+			LAYER_DEPTH_BIT_FB = 0x00000002
 		}
 		enum XrCompositionLayerFlags : UInt64
 		{
@@ -161,15 +231,16 @@ namespace StereoKit.Framework
 			TRACKED_KEYBOARD_HANDS_FB = 1000203001,
 			MAX_ENUM_FB = 0x7FFFFFFF,
 		}
-		enum XrResult : UInt32
+		enum XrResult : Int32
 		{
 			Success = 0,
 		}
 
 #pragma warning disable 0169 // handle is not "used", but required for interop
-		struct XrPassthroughFB      { ulong handle; }
-		struct XrPassthroughLayerFB { ulong handle; }
+		[StructLayout(LayoutKind.Sequential)] struct XrPassthroughFB      { ulong handle; }
+		[StructLayout(LayoutKind.Sequential)] struct XrPassthroughLayerFB { ulong handle; }
 #pragma warning restore 0169
+
 
 		[StructLayout(LayoutKind.Sequential)]
 		struct XrPassthroughCreateInfoFB
@@ -290,7 +361,8 @@ https://github.com/StereoKit/StereoKit/blob/master/Examples/StereoKitTest/Tools/
 </details>
 
 ## Step 3: Initialize the passthrough stepper
-Now that we’ve got the code, we’ll need to hook it up to our main program. Open up the **Program.cs** file. Add the `PassthroughFBExt` stepper at the beginning of the program (line 11). You’ll also need to add a `using` statement for `StereoKit.Framework` at the top of the file (line 2):
+
+Now that we’ve got the passthrough code, we’ll need to hook it up to our main program. Open up the **Program.cs** file. Add the `PassthroughFBExt` stepper at the beginning of the program (line 11). You’ll also need to add a `using` statement for `StereoKit.Framework` at the top of the file (line 2):
 
 ```csharp title="program.cs" showLineNumbers
 using StereoKit;
@@ -344,15 +416,16 @@ namespace PassthroughDotNet
 ```
 
 ## Step 4: Run it!
-Launch the **Oculus App** on your PC (If you don’t already have it, you can download it [here](https://www.meta.com/quest/setup/)). Plug your Quest in to your PC using a USB-C cable (or use Quest Air Link, if you’re into that sort thing). The Oculus App allows us to use our Quest with PC VR programs. So our program will actually be running on the PC and streamed to our headset! 
 
-You may need to enable passthrough in the Oculus App since it is a relatively new/experimental feature. To do this, open the Oculus App on your PC and head over to **Settings > Beta**. Enable the options for both **Developer Runtime Features** and **Passthrough over Oculus Link**.
+Launch the **Meta Quest Link** on your PC. (If you don’t already have it, you can download it [here](https://www.meta.com/quest/setup/)). Plug your Quest into your PC using a USB-C cable (or use Quest Air Link, if you’re into that sort thing). The Meta Quest Link app allows us to use our Quest with PCVR programs. So our program will actually be running on the PC and streamed to our headset! 
 
-![enable these options on the Oculus desktop app](quest-link-settings.png)
+You may need to enable passthrough in the Meta Quest Link since it is a relatively new/experimental feature. To do this, open the Meta Quest Link on your PC and head over to **Settings > Beta**. Enable the options for both **Developer Runtime Features** and **Passthrough over Meta Quest Link**.
 
-Next, strap on your Quest headset. Open up the **Quick Settings** and select **Quest Link**. (If you don’t see the Quest Link option, then your headset probably isn’t properly connected to the Oculus App.)
+![enable these options on the Oculus desktop app](meta-quest-link-passthrough-settings.png)
 
-![Select Quest Link from home menu](select-quest-link.png)
+Next, strap on your Quest headset. Open up the **Quick Settings** and select **Quest Link**. (If you don’t see the Quest Link option, then your headset probably isn’t properly connected to your PC! Make sure you are plugged into a USB-C 3.0 port.)
+
+![Select Quest Link from home menu](launch-meta-quest-link.png)
 
 Click the green play button in Visual Studio…
 
@@ -360,9 +433,10 @@ Click the green play button in Visual Studio…
 
 …and the program will start up with passthrough enabled!
 
-![passthrough-demo](ezgif-3-92c50aac5c.gif)
+![passthrough-demo](sk-passthrough-2025.gif)
 
 ## Bonus: Add a menu to toggle the passthrough
+
 Cool, so now that we got the passthrough enabled, it would be nice if we could toggle it on/off. So let’s add a menu and hook it up to the passthrough stepper. In the **Program.cs** file, we’ll need to access a reference to that Passthrough stepper that we initialized earlier. So go ahead and set it to local variable like this:
 
 ```csharp title="Program.cs"
@@ -374,7 +448,7 @@ Next, we’ll define a `Pose` for the window. So add another local variable:
 Pose windowPose = new Pose(-0.5f, 0, -0.3f, Quat.LookDir(1, 0, 1));
 ```
 
-Now in the core application loop, we can render the menu. Add a UI window with a button that is hooked up to the stepper (lines 10 -23, below):
+Now in the core application loop, we can render the menu. Add a UI window with a button that is hooked up to the stepper (lines 10-23, below):
 
 ```csharp title="Program.cs" showLineNumbers
 // Core application loop
@@ -391,10 +465,10 @@ while (SK.Step(() =>
     UI.WindowBegin("Passthrough Menu", ref windowPose);
     if (stepper.Available)
     {
+      if (UI.Button("toggle"))
+        stepper.Enabled = !stepper.Enabled;
 
-        if (UI.Button("toggle"))
-            stepper.EnabledPassthrough = !stepper.EnabledPassthrough;
-        UI.Label($"Passthrough is {(stepper.EnabledPassthrough ? "ON" : "OFF")}");
+      UI.Label($"Passthrough is {(stepper.Enabled ? "ON" : "OFF")}");
     }
     else
     {
@@ -408,7 +482,8 @@ while (SK.Step(() =>
 
 Great, that’s it! Now you should see a menu to toggle the passthrough on/off.
 
-![passthrough-demo](passthrough-toggle-menu.png) 
+![passthrough-demo](sk-passthrough-toggle-2025.gif) 
 
 ## Summary
+
 To access all the code files used in this guide, check out this git repo here: https://github.com/jackdaus/StereoKitPassthroughDotNet. You can clone this repository and run the completed project on your Quest!
