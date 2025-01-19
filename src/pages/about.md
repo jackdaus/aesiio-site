@@ -2,6 +2,6 @@
 title: About
 ---
 # About
-Hey! My name is `Jack Daus`. I’m a software developer interested in building augmented reality (AR) applications. I'm a graduate student at George Mason University over in Virginia. Welcome to my site! I write tutorials about AR techonology and host some info about my personal projects. This website was build with [Docusaurus](https://docusaurus.io/)!
+Hey! My name is `Jack Daus`. I’m a full-time software developer building AR/VR applications. I'm also a computer science masters student at George Mason University. On this site, I am writing tutorials for AR/VR development. You can also find some info about my personal projects. This website was build with [Docusaurus](https://docusaurus.io/) (which I highly recommend).
 
 ![me](/img/me.jpg)

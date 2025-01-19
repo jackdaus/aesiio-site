@@ -6,7 +6,7 @@ import { themes } from "prism-react-renderer";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Aesiio",
-  tagline: "A Blog Of Augmented Reality How-Tos For Beginners",
+  tagline: "Some guides for AR/VR development",
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here

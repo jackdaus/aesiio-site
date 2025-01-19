@@ -4,7 +4,7 @@ title: How to Use Meta Quest Passthrough with StereoKit (PCVR)
 description: A beginner's guide on how to enable video passthrough on Meta Quest for a PCVR StereoKit project.
 image: ./sk-passthrough-2025.gif
 authors: jack
-tags: [StereoKit, AR, VR, .NET Core, Meta Quest, Passthrough]
+tags: [StereoKit, AR, VR, .NET, Meta Quest, Passthrough]
 comments: true
 ---
 This guide will show you how to add the Meta Quest passthrough feature to a [StereoKit](https://stereokit.net/) project. This how-to guide assumes we are building an app for PCVR.<!--truncate--> (If you’re looking to enable passthrough on a Native Android StereoKit project, check out [this post](/blog/passthrough-native-android) instead.) You can find all the code in this guide over at [this git repo](https://github.com/jackdaus/StereoKitPassthroughDotNet). 
